@@ -29,6 +29,7 @@ contract ERC20 is IERC20 {
         uint amount
     ) public override returns (bool) {
         balanceOf[msg.sender] -= amount;
+        balanceOf[recipient] += amount;
         emit Transfer(msg.sender, recipient, amount);
         return true;
     }
@@ -36,9 +37,12 @@ contract ERC20 is IERC20 {
     // approve()函数：实现IERC20中的approve函数，代币授权逻辑。
     // 被授权方spender可以支配授权方的amount数量的代币。
     // spender可以是EOA账户，也可以是合约账户：当你用uniswap交易代币时，你需要将代币授权给uniswap合约。
-    function approve(address spender,uint amount) public override returns(bool) {
+    function approve(
+        address spender,
+        uint amount
+    ) public override returns (bool) {
         allowance[msg.sender][spender] = amount;
-        emit Approval(msg.sender,spender,amount);
+        emit Approval(msg.sender, spender, amount);
         return true;
     }
 
@@ -65,10 +69,12 @@ contract ERC20 is IERC20 {
 
     // burn()函数：销毁代币函数，不在IERC20标准中。
     function burn(uint amount) external {
-        balanceOf[msg.sender] -=amount;
+        balanceOf[msg.sender] -= amount;
         totalSupply -= amount;
-        emit Transfer(msg.sender,address(0),amount);
+        emit Transfer(msg.sender, address(0), amount);
     }
 
-
+    function getAmount() external view returns (uint256 amount) {
+        return (balanceOf[msg.sender]);
+    }
 }
